@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SONIDO — Mi Universo Musical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== RESET & VARS ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0d0d0d;
+      --paper:      #f5f0e8;
+      --cream:      #ede7d5;
+      --gold:       #c8973a;
+      --gold-light: #e8b85a;
+      --red:        #b83232;
+      --muted:      #7a7060;
+      --white:      #ffffff;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-mono:    'Space Mono', monospace;
+      --font-serif:   'DM Serif Display', Georgia, serif;
+
+      --anim--hover-time: 400ms;
+      --anim--hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+    }
+
+    /* ===== NOISE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,151,58,0.2);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--paper); }
+
+    /* ========== BUTTON (from Uiverse.io by shokat_2650) ========== */
+    @property --angle-1 {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: -75deg;
+    }
+    @property --angle-2 {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: -45deg;
+    }
+
+    .button-wrap {
+      position: relative;
+      z-index: 2;
+      border-radius: 999vw;
+      background: transparent;
+      pointer-events: none;
+      transition: all var(--anim--hover-time) var(--anim--hover-ease);
+    }
+
+    .button-shadow {
+      --shadow-cuttoff-fix: 2em;
+      position: absolute;
+      width: calc(100% + var(--shadow-cuttoff-fix));
+      height: calc(100% + var(--shadow-cuttoff-fix));
+      top: calc(0% - var(--shadow-cuttoff-fix) / 2);
+      left: calc(0% - var(--shadow-cuttoff-fix) / 2);
+      filter: blur(clamp(2px, 0.125em, 12px));
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .button-shadow::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      border-radius: 999vw;
+      background: linear-gradient(180deg, rgba(200,151,58,0.4), rgba(200,151,58,0.2));
+      width: calc(100% - var(--shadow-cuttoff-fix) - 0.25em);
+      height: calc(100% - var(--shadow-cuttoff-fix) - 0.25em);
+      top: calc(var(--shadow-cuttoff-fix) - 0.5em);
+      left: calc(var(--shadow-cuttoff-fix) - 0.875em);
+      padding: 0.125em;
+      box-sizing: border-box;
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      transition: all var(--anim--hover-time) var(--anim--hover-ease);
+      overflow: visible;
+      opacity: 1;
+    }
+
+    .button-wrap button {
+      --border-width: clamp(1px, 0.0625em, 4px);
+      all: unset;
+      cursor: pointer;
+      position: relative;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      pointer-events: auto;
+      z-index: 3;
+      background: linear-gradient(
+        -75deg,
+        rgba(200,151,58,0.15),
+        rgba(232,184,90,0.4),
+        rgba(200,151,58,0.15)
+      );
+      border-radius: 999vw;
+      box-shadow:
+        inset 0 0.125em 0.125em rgba(0,0,0,0.15),
+        inset 0 -0.125em 0.125em rgba(232,184,90,0.3),
+        0 0.25em 0.125em -0.125em rgba(0,0,0,0.4),
+        0 0 0.1em 0.25em inset rgba(200,151,58,0.15),
+        0 0 0 0 rgba(200,151,58,1);
+      backdrop-filter: blur(clamp(1px, 0.125em, 4px));
+      transition: all var(--anim--hover-time) var(--anim--hover-ease);
+    }
+
+    .button-wrap button:hover {
+      transform: scale(0.975);
+      box-shadow:
+        inset 0 0.125em 0.125em rgba(0,0,0,0.1),
+        inset 0 -0.125em 0.125em rgba(232,184,90,0.5),
+        0 0.15em 0.05em -0.1em rgba(0,0,0,0.4),
+        0 0 0.05em 0.1em inset rgba(200,151,58,0.4),
+        0 0 0 0 rgba(200,151,58,1);
+    }
+
+    .button-wrap button span {
+      position: relative;
+      display: block;
+      user-select: none;
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--gold);
+      -webkit-font-smoothing: antialiased;
+      text-shadow: 0em 0.25em 0.05em rgba(0,0,0,0.3);
+      transition: all var(--anim--hover-time) var(--anim--hover-ease);
+      padding-inline: 1.5em;
+      padding-block: 0.875em;
+    }
+
+    .button-wrap button:hover span {
+      text-shadow: 0.025em 0.025em 0.025em rgba(0,0,0,0.2);
+      color: var(--gold-light);
+    }
+
+    .button-wrap button span::after {
+      content: "";
+      display: block;
+      position: absolute;
+      z-index: 1;
+      width: calc(100% - var(--border-width));
+      height: calc(100% - var(--border-width));
+      top: calc(0% + var(--border-width) / 2);
+      left: calc(0% + var(--border-width) / 2);
+      box-sizing: border-box;
+      border-radius: 999vw;
+      overflow: clip;
+      background: linear-gradient(
+        var(--angle-2),
+        rgba(200,151,58,0) 0%,
+        rgba(232,184,90,0.4) 40% 50%,
+        rgba(200,151,58,0) 55%
+      );
+      z-index: 3;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+      background-repeat: no-repeat;
+      transition:
+        background-position calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease),
+        --angle-2 calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease);
+    }
+
+    .button-wrap button:hover span::after { background-position: 25% 50%; }
+    .button-wrap button:active span::after { background-position: 50% 15%; --angle-2: -15deg; }
+
+    .button-wrap button::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      border-radius: 999vw;
+      width: calc(100% + var(--border-width));
+      height: calc(100% + var(--border-width));
+      top: calc(0% - var(--border-width) / 2);
+      left: calc(0% - var(--border-width) / 2);
+      padding: var(--border-width);
+      box-sizing: border-box;
+      background: conic-gradient(
+          from var(--angle-1) at 50% 50%,
+          rgba(200,151,58,0.8),
+          rgba(200,151,58,0) 5% 40%,
+          rgba(200,151,58,0.8) 50%,
+          rgba(200,151,58,0) 60% 95%,
+          rgba(200,151,58,0.8)
+        ),
+        linear-gradient(180deg, rgba(232,184,90,0.5), rgba(200,151,58,0.3));
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      transition: all var(--anim--hover-time) var(--anim--hover-ease), --angle-1 500ms ease;
+      box-shadow: inset 0 0 0 calc(var(--border-width) / 2) rgba(200,151,58,0.4);
+    }
+
+    .button-wrap button:hover::after { --angle-1: -125deg; }
+    .button-wrap button:active::after { --angle-1: -75deg; }
+    .button-wrap:has(button:hover) .button-shadow { filter: blur(clamp(2px, 0.0625em, 6px)); }
+    .button-wrap:has(button:hover) .button-shadow::after { top: calc(var(--shadow-cuttoff-fix) - 0.875em); opacity: 1; }
+    .button-wrap:has(button:active) { transform: rotate3d(1, 0, 0, 25deg); }
+    .button-wrap:has(button:active) .button-shadow::after { top: calc(var(--shadow-cuttoff-fix) - 0.5em); opacity: 0.75; }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 8rem 3rem 5rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    /* Dotted grid SVG from user */
+    .hero-bg svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .hero-circle {
+      position: absolute;
+      width: 55vw;
+      height: 55vw;
+      max-width: 700px;
+      max-height: 700px;
+      right: -5%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #1a1a1a, #2a2520, #c8973a22, #1a1a1a, #2a2520);
+      border: 1px solid rgba(200,151,58,0.15);
+      animation: spin 30s linear infinite;
+    }
+
+    .hero-circle::before {
+      content: '';
+      position: absolute;
+      inset: 8%;
+      border-radius: 50%;
+      background: #111;
+      border: 1px solid rgba(200,151,58,0.1);
+    }
+
+    .hero-circle::after {
+      content: '';
+      position: absolute;
+      inset: 44%;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.7;
+    }
+
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+    /* Groove rings */
+    .groove {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(200,151,58,0.06);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 2.5rem;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 3rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(200,151,58,0.2);
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-wrap {
+      overflow: hidden;
+      background: var(--gold);
+      padding: 0.75rem 0;
+      display: flex;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 2rem;
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-track span {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .marquee-track .dot {
+      color: rgba(13,13,13,0.4);
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 6rem 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid rgba(200,151,58,0.2);
+      padding-bottom: 1.5rem;
+    }
+
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    /* ===== GROUPS GRID ===== */
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5px;
+      background: rgba(200,151,58,0.15);
+    }
+
+    .group-card {
+      background: var(--ink);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: background 0.4s;
+    }
+
+    .group-card:hover { background: #141414; }
+
+    .group-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--gold);
+      transition: height 0.4s var(--anim--hover-ease);
+    }
+
+    .group-card:hover::before { height: 100%; }
+
+    .card-era {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-genre {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-desc {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.9;
+      color: rgba(245,240,232,0.55);
+    }
+
+    .card-bar {
+      margin-top: 1.5rem;
+      height: 2px;
+      background: rgba(200,151,58,0.15);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .card-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px;
+      transform-origin: left;
+      animation: fillBar 1.2s var(--anim--hover-ease) forwards;
+      transform: scaleX(0);
+    }
+
+    .group-card:nth-child(1) .card-bar-fill { width: 95%; animation-delay: 0.1s; }
+    .group-card:nth-child(2) .card-bar-fill { width: 88%; animation-delay: 0.2s; }
+    .group-card:nth-child(3) .card-bar-fill { width: 92%; animation-delay: 0.3s; }
+    .group-card:nth-child(4) .card-bar-fill { width: 79%; animation-delay: 0.4s; }
+    .group-card:nth-child(5) .card-bar-fill { width: 85%; animation-delay: 0.5s; }
+    .group-card:nth-child(6) .card-bar-fill { width: 90%; animation-delay: 0.6s; }
+
+    @keyframes fillBar { to { transform: scaleX(1); } }
+
+    /* ===== GENRES SECTION ===== */
+    .genres-section { background: #0a0a0a; }
+
+    .genres-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .genre-row {
+      display: grid;
+      grid-template-columns: 4rem 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(200,151,58,0.1);
+      cursor: default;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .genre-row::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(200,151,58,0.04);
+      transform: translateX(-100%);
+      transition: transform 0.4s var(--anim--hover-ease);
+    }
+
+    .genre-row:hover::before { transform: translateX(0); }
+
+    .genre-index {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .genre-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      transition: color 0.3s;
+    }
+
+    .genre-row:hover .genre-name { color: var(--gold); }
+
+    .genre-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid rgba(200,151,58,0.3);
+      border-radius: 999px;
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+
+    .genre-row:hover .tag {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ===== QUOTE SECTION ===== */
+    .quote-section {
+      background: var(--gold);
+      padding: 5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quote-section::before {
+      content: '"';
+      position: absolute;
+      font-family: var(--font-display);
+      font-size: 30rem;
+      color: rgba(13,13,13,0.08);
+      top: -5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .quote-text {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--ink);
+      max-width: 800px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.2;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quote-author {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(13,13,13,0.6);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== ALBUMS SECTION ===== */
+    .albums-section { background: var(--ink); }
+
+    .albums-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .album-item {
+      position: relative;
+      cursor: default;
+    }
+
+    .album-cover {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #1a1a1a;
+      border: 1px solid rgba(200,151,58,0.12);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      transition: transform 0.4s var(--anim--hover-ease);
+    }
+
+    .album-item:hover .album-cover { transform: translateY(-4px); }
+
+    .album-cover-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vinyl-mini {
+      width: 70%;
+      height: 70%;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #111, #222, #111, #1a1a1a, #111);
+      border: 1px solid rgba(200,151,58,0.15);
+      position: relative;
+      animation: spin 8s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .album-item:hover .vinyl-mini { animation-play-state: running; }
+
+    .vinyl-mini::after {
+      content: '';
+      position: absolute;
+      inset: 40%;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+
+    .album-color {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      transition: opacity 0.4s;
+    }
+
+    .album-item:hover .album-color { opacity: 0.25; }
+
+    .album-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.25rem;
+    }
+
+    .album-artist {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .album-year {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #080808;
+      border-top: 1px solid rgba(200,151,58,0.15);
+      padding: 4rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-brand-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .footer-brand-desc {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      line-height: 1.9;
+      color: var(--muted);
+      max-width: 320px;
+      margin-bottom: 2rem;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links a:hover { color: var(--paper); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(200,151,58,0.1);
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: rgba(122,112,96,0.5);
+    }
+
+    /* Footer dotted grid */
+    .footer-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.3;
+    }
+
+    footer > * { position: relative; z-index: 1; }
+
+    /* ===== ANIMATIONS ===== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s var(--anim--hover-ease) forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.55s; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      .hero-circle { width: 80vw; height: 80vw; right: -20%; top: 15%; transform: none; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .genre-row { grid-template-columns: 3rem 1fr; }
+      .genre-tags { display: none; }
+      footer { padding: 3rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">SONIDO</a>
+    <ul class="nav-links">
+      <li><a href="#grupos">Grupos</a></li>
+      <li><a href="#estilos">Estilos</a></li>
+      <li><a href="#albums">Álbumes</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <!-- Dotted grid from Uiverse.io -->
+      <svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+        <defs>
+          <pattern patternUnits="userSpaceOnUse" height="30" width="30" id="dottedGrid">
+            <circle fill="rgba(200,151,58,0.15)" r="1" cy="2" cx="2"></circle>
+          </pattern>
+        </defs>
+        <rect fill="url(#dottedGrid)" height="100%" width="100%"></rect>
+      </svg>
+
+      <!-- Vinyl record decoration -->
+      <div class="hero-circle">
+        <div class="groove" style="width:90%;height:90%;"></div>
+        <div class="groove" style="width:75%;height:75%;"></div>
+        <div class="groove" style="width:60%;height:60%;"></div>
+        <div class="groove" style="width:45%;height:45%;"></div>
+        <div class="groove" style="width:30%;height:30%;"></div>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow fade-up">Mi universo musical</p>
+      <h1 class="hero-title fade-up delay-1">
+        Todo<br>es <em>música</em>.
+      </h1>
+      <p class="hero-sub fade-up delay-2">
+        Un espacio dedicado a los sonidos que me definen. Grupos, estilos,
+        álbumes y todo lo que hace que la vida suene mejor.
+      </p>
+
+      <!-- THE SPECIAL BUTTON — in the hero as main CTA -->
+      <div class="fade-up delay-3">
+        <div class="button-wrap">
+          <button onclick="document.getElementById('grupos').scrollIntoView({behavior:'smooth'})">
+            <span>Explorar ↓</span>
+          </button>
+          <div class="button-shadow"></div>
+        </div>
+      </div>
+
+      <div class="hero-stats fade-up delay-4">
+        <div>
+          <span class="stat-num">12+</span>
+          <span class="stat-label">Grupos favoritos</span>
+        </div>
+        <div>
+          <span class="stat-num">8</span>
+          <span class="stat-label">Géneros</span>
+        </div>
+        <div>
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Horas escuchadas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Rock</span><span class="dot">✦</span>
+      <span>Jazz</span><span class="dot">✦</span>
+      <span>Blues</span><span class="dot">✦</span>
+      <span>Metal</span><span class="dot">✦</span>
+      <span>Indie</span><span class="dot">✦</span>
+      <span>Funk</span><span class="dot">✦</span>
+      <span>Soul</span><span class="dot">✦</span>
+      <span>Clásica</span><span class="dot">✦</span>
+      <span>Folk</span><span class="dot">✦</span>
+      <span>Electrónica</span><span class="dot">✦</span>
+      <span>Rock</span><span class="dot">✦</span>
+      <span>Jazz</span><span class="dot">✦</span>
+      <span>Blues</span><span class="dot">✦</span>
+      <span>Metal</span><span class="dot">✦</span>
+      <span>Indie</span><span class="dot">✦</span>
+      <span>Funk</span><span class="dot">✦</span>
+      <span>Soul</span><span class="dot">✦</span>
+      <span>Clásica</span><span class="dot">✦</span>
+      <span>Folk</span><span class="dot">✦</span>
+      <span>Electrónica</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- GROUPS -->
+  <section id="grupos">
+    <div class="section-header">
+      <div>
+        <p class="section-num">01 — Grupos</p>
+        <h2 class="section-title">Mis grupos <em>favoritos</em></h2>
+      </div>
+    </div>
+
+    <div class="groups-grid">
+      <article class="group-card">
+        <p class="card-era">Desde los 60s</p>
+        <h3 class="card-name">The Beatles</h3>
+        <p class="card-genre">Rock · Pop · Psicodelia</p>
+        <p class="card-desc">Cuatro chicos de Liverpool que cambiaron la música para siempre. Su evolución desde el beat hasta la psicodelia sigue siendo insuperable.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+
+      <article class="group-card">
+        <p class="card-era">Desde los 70s</p>
+        <h3 class="card-name">Led Zeppelin</h3>
+        <p class="card-genre">Hard Rock · Blues Rock · Metal</p>
+        <p class="card-desc">La fusión perfecta entre el blues crudo, el rock salvaje y la sutileza acústica. Plant, Page, Bonham y Jones: magia pura.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+
+      <article class="group-card">
+        <p class="card-era">Desde los 70s</p>
+        <h3 class="card-name">Pink Floyd</h3>
+        <p class="card-genre">Rock Progresivo · Psicodelia</p>
+        <p class="card-desc">El viaje sonoro definitivo. Álbumes conceptuales que trascienden la música para convertirse en experiencias completas.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+
+      <article class="group-card">
+        <p class="card-era">Desde los 80s</p>
+        <h3 class="card-name">Metallica</h3>
+        <p class="card-genre">Thrash Metal · Heavy Metal</p>
+        <p class="card-desc">La banda que definió el thrash metal. Desde la brutalidad de Kill 'Em All hasta la complejidad de su Black Album.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+
+      <article class="group-card">
+        <p class="card-era">Desde los 90s</p>
+        <h3 class="card-name">Radiohead</h3>
+        <p class="card-genre">Alternative · Art Rock · Electrónica</p>
+        <p class="card-desc">La banda más valiente del rock moderno. Cada álbum es una reinvención completa sin perder nunca su esencia.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+
+      <article class="group-card">
+        <p class="card-era">Desde los 90s</p>
+        <h3 class="card-name">Rage Against the Machine</h3>
+        <p class="card-genre">Rap Metal · Funk Metal · Punk</p>
+        <p class="card-desc">Rabia política convertida en arte. La guitarra de Tom Morello y la voz de Zack de la Rocha como armas de denuncia social.</p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- GENRES -->
+  <section id="estilos" class="genres-section">
+    <div class="section-header">
+      <div>
+        <p class="section-num">02 — Géneros</p>
+        <h2 class="section-title">Estilos que <em>escucho</em></h2>
+      </div>
+    </div>
+
+    <div class="genres-list">
+      <div class="genre-row">
+        <span class="genre-index">01</span>
+        <span class="genre-name">Rock Clásico</span>
+        <div class="genre-tags">
+          <span class="tag">Guitar riffs</span>
+          <span class="tag">Clásico</span>
+          <span class="tag">Atemporal</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">02</span>
+        <span class="genre-name">Metal</span>
+        <div class="genre-tags">
+          <span class="tag">Thrash</span>
+          <span class="tag">Heavy</span>
+          <span class="tag">Prog</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">03</span>
+        <span class="genre-name">Jazz</span>
+        <div class="genre-tags">
+          <span class="tag">Bebop</span>
+          <span class="tag">Fusión</span>
+          <span class="tag">Modal</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">04</span>
+        <span class="genre-name">Blues</span>
+        <div class="genre-tags">
+          <span class="tag">Chicago</span>
+          <span class="tag">Delta</span>
+          <span class="tag">Electric</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">05</span>
+        <span class="genre-name">Rock Progresivo</span>
+        <div class="genre-tags">
+          <span class="tag">Conceptual</span>
+          <span class="tag">Complejo</span>
+          <span class="tag">Épico</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">06</span>
+        <span class="genre-name">Folk</span>
+        <div class="genre-tags">
+          <span class="tag">Acústico</span>
+          <span class="tag">Narrativo</span>
+          <span class="tag">Raíces</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">07</span>
+        <span class="genre-name">Indie / Alternative</span>
+        <div class="genre-tags">
+          <span class="tag">Lo-fi</span>
+          <span class="tag">Art Rock</span>
+          <span class="tag">Post-Rock</span>
+        </div>
+      </div>
+      <div class="genre-row">
+        <span class="genre-index">08</span>
+        <span class="genre-name">Electrónica</span>
+        <div class="genre-tags">
+          <span class="tag">Ambient</span>
+          <span class="tag">Experimental</span>
+          <span class="tag">Krautrock</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote-section">
+    <blockquote class="quote-text">
+      "Sin música, la vida sería un error."
+    </blockquote>
+    <p class="quote-author">— Friedrich Nietzsche</p>
+  </div>
+
+  <!-- ALBUMS -->
+  <section id="albums" class="albums-section">
+    <div class="section-header">
+      <div>
+        <p class="section-num">03 — Álbumes</p>
+        <h2 class="section-title">Discos <em>imprescindibles</em></h2>
+      </div>
+    </div>
+
+    <div class="albums-grid">
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #c8973a, #8b4513);"></div>
+        </div>
+        <p class="album-title">Abbey Road</p>
+        <p class="album-artist">The Beatles</p>
+        <p class="album-year">1969</p>
+      </div>
+
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #2c5a8a, #1a1a2e);"></div>
+        </div>
+        <p class="album-title">The Dark Side of the Moon</p>
+        <p class="album-artist">Pink Floyd</p>
+        <p class="album-year">1973</p>
+      </div>
+
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #8b0000, #2a0000);"></div>
+        </div>
+        <p class="album-title">Master of Puppets</p>
+        <p class="album-artist">Metallica</p>
+        <p class="album-year">1986</p>
+      </div>
+
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #4a4a4a, #1a1a1a);"></div>
+        </div>
+        <p class="album-title">OK Computer</p>
+        <p class="album-artist">Radiohead</p>
+        <p class="album-year">1997</p>
+      </div>
+
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #c8973a, #5a4020);"></div>
+        </div>
+        <p class="album-title">Led Zeppelin IV</p>
+        <p class="album-artist">Led Zeppelin</p>
+        <p class="album-year">1971</p>
+      </div>
+
+      <div class="album-item">
+        <div class="album-cover">
+          <div class="album-cover-inner"><div class="vinyl-mini"></div></div>
+          <div class="album-color" style="background: linear-gradient(135deg, #2d5a27, #0a1a08);"></div>
+        </div>
+        <p class="album-title">Rage Against the Machine</p>
+        <p class="album-artist">RATM</p>
+        <p class="album-year">1992</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <!-- Dotted grid background in footer -->
+    <svg class="footer-bg" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+      <defs>
+        <pattern patternUnits="userSpaceOnUse" height="30" width="30" id="dottedGridFooter">
+          <circle fill="rgba(200,151,58,0.2)" r="1" cy="2" cx="2"></circle>
+        </pattern>
+      </defs>
+      <rect fill="url(#dottedGridFooter)" height="100%" width="100%"></rect>
+    </svg>
+
+    <div class="footer-grid">
+      <div>
+        <p class="footer-brand-name">SONIDO</p>
+        <p class="footer-brand-desc">
+          Un espacio personal dedicado a la música que forma parte de mi vida.
+          Grupos, géneros, álbumes y todo lo que hace que el mundo suene mejor.
+          Próximamente: literatura.
+        </p>
+      </div>
+
+      <div>
+        <p class="footer-col-title">Secciones</p>
+        <ul class="footer-links">
+          <li><a href="#grupos">Grupos favoritos</a></li>
+          <li><a href="#estilos">Estilos musicales</a></li>
+          <li><a href="#albums">Álbumes imprescindibles</a></li>
+          <li><a href="#">Literatura (próximamente)</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-col-title">Géneros</p>
+        <ul class="footer-links">
+          <li><a href="#estilos">Rock Clásico</a></li>
+          <li><a href="#estilos">Metal</a></li>
+          <li><a href="#estilos">Jazz & Blues</a></li>
+          <li><a href="#estilos">Indie / Alternative</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 SONIDO — Hecho con pasión musical</p>
+
+      <!-- THE SPECIAL BUTTON in footer — back to top -->
+      <div class="button-wrap">
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'})">
+          <span>Volver arriba ↑</span>
+        </button>
+        <div class="button-shadow"></div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
